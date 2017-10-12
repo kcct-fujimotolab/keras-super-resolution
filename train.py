@@ -7,37 +7,41 @@ from keras import backend
 from keras.optimizers import SGD
 from PIL import Image
 from tqdm import tqdm
-# from hyperdash import Experiment
-
+from hyperdash import Experiment
 from keras.models import Sequential
-from keras.layers import Activation, Dense, Reshape, BatchNormalization
-from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Flatten
-from keras.layers.advanced_activations import LeakyReLU
+from keras.layers import Activation, Dense, Reshape
+from keras.layers import Conv2D
+
+
+def save_model(model, name):
+    json_data = model.to_json()
+    with open(name, 'w') as f:
+        f.write(json_data)
 
 
 def build_CNN():
     model = Sequential()
-    model.add(Conv2D(32, kernel_size=(9, 9), input_shape=(96, 96, 3)))
+    model.add(Conv2D(32, kernel_size=(9, 9), input_shape=(48, 48, 3), padding='same'))
     model.add(Activation('relu'))
-    model.add(Conv2D(64, kernel_size=(5, 5)))
+    model.add(Conv2D(64, kernel_size=(5, 5), padding='same'))
     model.add(Activation('relu'))
-    model.add(Conv2D(3, kernel_size=(3, 3)))
+    model.add(Conv2D(3, kernel_size=(3, 3), padding='same'))
     model.add(Activation('sigmoid'))
     return model
 
 
-def load_data():
+def load_data(dirname):
     x_train = np.array([])
     y_train1 = np.array([])
     y_train2 = np.array([])
     y_train3 = np.array([])
     y_train4 = np.array([])
     counter = 0
-    for file in tqdm(os.listdir('images_sample')):
+    for file in tqdm(os.listdir(dirname)):
         # 拡張子が.jpgでなければ
         if os.path.splitext(file)[1] != '.jpg':
             continue
-        image = Image.open('images_sample/' + file)
+        image = Image.open(dirname + '/' + file)
         x_train = np.append(x_train, image.resize((48, 48)))
         image = image.resize((96, 96))
         image = np.array(image)
@@ -62,25 +66,43 @@ def load_data():
 
 
 def main():
-    (x_train, y_train1, y_train2, y_train3, y_train4) = load_data()
-    image = Image.fromarray(np.uint8(x_train[0] * 255))
-    image.show()
-    image = Image.fromarray(np.uint8(y_train1[0] * 255))
-    image.show()
-    image = Image.fromarray(np.uint8(y_train2[0] * 255))
-    image.show()
-    image = Image.fromarray(np.uint8(y_train3[0] * 255))
-    image.show()
-    image = Image.fromarray(np.uint8(y_train4[0] * 255))
-    image.show()
-    # model = build_CNN()
-    # optimizer = SGD(lr=0.5, momentum=0.9, nesterov=True)
-    # model.complie(loss='binary_crossentropy', optimizer=optimizer)
-    # setting = tf.ConfigProto()
-    # setting.gpu_options.allow_growth = True
-    # sess = tf.Session(config=setting)
-    # backend.set_session(sess)
-    # model.fit(x_train, y_train, batch_size=24, epochs=10000)
+    exp = Experiment('4PCNN')
+    (x_train, y_train1, y_train2, y_train3, y_train4) = load_data('images_sample')
+    upper_left = build_CNN()
+    upper_right = build_CNN()
+    lower_left = build_CNN()
+    lower_right = build_CNN()
+    optimizer = SGD(lr=0.5, momentum=0.9, nesterov=True)
+    upper_left.compile(loss='binary_crossentropy', optimizer=optimizer)
+    upper_right.compile(loss='binary_crossentropy', optimizer=optimizer)
+    lower_left.compile(loss='binary_crossentropy', optimizer=optimizer)
+    lower_right.compile(loss='binary_crossentropy', optimizer=optimizer)
+    save_model(upper_left, 'ul_model.json')
+    save_model(upper_right, 'ur_model.json')
+    save_model(lower_left, 'll_model.json')
+    save_model(lower_right, 'lr_model.json')
+    setting = tf.ConfigProto()
+    setting.gpu_options.allow_growth = True
+    sess = tf.Session(config=setting)
+    backend.set_session(sess)
+    upper_left.fit(x_train, y_train1, batch_size=32, epochs=3)
+    upper_right.fit(x_train, y_train2, batch_size=32, epochs=3)
+    lower_left.fit(x_train, y_train3, batch_size=32, epochs=3)
+    lower_right.fit(x_train, y_train4, batch_size=32, epochs=3)
+    upper_left.save_weights('ul_model_weights.hdf5')
+    upper_right.save_weights('ur_model_weights.hdf5')
+    lower_left.save_weights('ll_model_weights.hdf5')
+    lower_right.save_weights('lr_model_weights.hdf5')
+    (x_test, y_test1, y_test2, y_test3, y_test4) = load_data('images_sample')
+    eva = upper_left.evaluate(x_test, y_test1, batch_size=32, verbose=1)
+    print(eva)
+    eva = upper_right.evaluate(x_test, y_test2, batch_size=32, verbose=1)
+    print(eva)
+    eva = lower_left.evaluate(x_test, y_test3, batch_size=32, verbose=1)
+    print(eva)
+    eva = lower_right.evaluate(x_test, y_test4, batch_size=32, verbose=1)
+    print(eva)
+    exp.end()
 
 
 if __name__ == '__main__':
