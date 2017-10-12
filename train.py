@@ -67,7 +67,7 @@ def load_data(dirname):
 
 def main():
     exp = Experiment('4PCNN')
-    (x_train, y_train1, y_train2, y_train3, y_train4) = load_data('images_sample')
+    (x_train, y_train1, y_train2, y_train3, y_train4) = load_data('images')
     upper_left = build_CNN()
     upper_right = build_CNN()
     lower_left = build_CNN()
@@ -93,7 +93,7 @@ def main():
     upper_right.save_weights('ur_model_weights.hdf5')
     lower_left.save_weights('ll_model_weights.hdf5')
     lower_right.save_weights('lr_model_weights.hdf5')
-    (x_test, y_test1, y_test2, y_test3, y_test4) = load_data('images_sample')
+    (x_test, y_test1, y_test2, y_test3, y_test4) = load_data('images_test')
     eva = upper_left.evaluate(x_test, y_test1, batch_size=32, verbose=1)
     print(eva)
     eva = upper_right.evaluate(x_test, y_test2, batch_size=32, verbose=1)
