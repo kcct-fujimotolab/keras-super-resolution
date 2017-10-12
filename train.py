@@ -41,16 +41,10 @@ def load_data():
         x_train = np.append(x_train, image.resize((48, 48)))
         image = image.resize((96, 96))
         image = np.array(image)
-        for i in range(96):
-            for j in range(96):
-                if i % 2 == 0 and j % 2 == 0:
-                    y_train1 = np.append(y_train1, image[i][j])
-                elif i % 2 == 0 and j % 2 == 1:
-                    y_train2 = np.append(y_train2, image[i][j])
-                elif i % 2 == 1 and j % 2 == 0:
-                    y_train3 = np.append(y_train3, image[i][j])
-                elif i % 2 == 1 and j % 2 == 1:
-                    y_train4 = np.append(y_train4, image[i][j])
+        y_train1 = np.append(y_train1, image[0::2,0::2])
+        y_train2 = np.append(y_train2, image[0::2,1::2])
+        y_train3 = np.append(y_train3, image[1::2,0::2])
+        y_train4 = np.append(y_train4, image[1::2,1::2])
         counter = counter + 1
     x_train = x_train / 255
     y_train1 = y_train1 / 255
