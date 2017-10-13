@@ -21,9 +21,9 @@ def save_model(model, name):
 
 def build_CNN():
     model = Sequential()
-    model.add(Conv2D(32, kernel_size=(9, 9), input_shape=(48, 48, 3), padding='same'))
+    model.add(Conv2D(32, kernel_size=(5, 5), input_shape=(48, 48, 3), padding='same'))
     model.add(Activation('relu'))
-    model.add(Conv2D(64, kernel_size=(5, 5), padding='same'))
+    model.add(Conv2D(64, kernel_size=(3, 3), padding='same'))
     model.add(Activation('relu'))
     model.add(Conv2D(3, kernel_size=(3, 3), padding='same'))
     model.add(Activation('sigmoid'))
@@ -76,11 +76,11 @@ def main():
     lower_right = build_CNN()
 
     # optimizer = SGD(lr=0.5, momentum=0.9, nesterov=True)
-    optimizer = Adam(lr=0.0001)
-    upper_left.compile(loss='binary_crossentropy', optimizer=optimizer)
-    upper_right.compile(loss='binary_crossentropy', optimizer=optimizer)
-    lower_left.compile(loss='binary_crossentropy', optimizer=optimizer)
-    lower_right.compile(loss='binary_crossentropy', optimizer=optimizer)
+    optimizer = Adam(lr=0.5)
+    upper_left.compile(loss='mse', optimizer=optimizer)
+    upper_right.compile(loss='mse', optimizer=optimizer)
+    lower_left.compile(loss='mse', optimizer=optimizer)
+    lower_right.compile(loss='mse', optimizer=optimizer)
 
     save_model(upper_left, 'ul_model.json')
     save_model(upper_right, 'ur_model.json')
