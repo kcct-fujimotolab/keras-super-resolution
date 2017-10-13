@@ -67,33 +67,42 @@ def load_data(dirname):
 
 def main():
     exp = Experiment('4PCNN')
+
     (x_train, y_train1, y_train2, y_train3, y_train4) = load_data('images')
+    
     upper_left = build_CNN()
     upper_right = build_CNN()
     lower_left = build_CNN()
     lower_right = build_CNN()
+
     optimizer = SGD(lr=0.5, momentum=0.9, nesterov=True)
     upper_left.compile(loss='binary_crossentropy', optimizer=optimizer)
     upper_right.compile(loss='binary_crossentropy', optimizer=optimizer)
     lower_left.compile(loss='binary_crossentropy', optimizer=optimizer)
     lower_right.compile(loss='binary_crossentropy', optimizer=optimizer)
+
     save_model(upper_left, 'ul_model.json')
     save_model(upper_right, 'ur_model.json')
     save_model(lower_left, 'll_model.json')
     save_model(lower_right, 'lr_model.json')
+
     setting = tf.ConfigProto()
     setting.gpu_options.allow_growth = True
     sess = tf.Session(config=setting)
     backend.set_session(sess)
+
     upper_left.fit(x_train, y_train1, batch_size=32, epochs=20000)
     upper_right.fit(x_train, y_train2, batch_size=32, epochs=20000)
     lower_left.fit(x_train, y_train3, batch_size=32, epochs=20000)
     lower_right.fit(x_train, y_train4, batch_size=32, epochs=20000)
+
     upper_left.save_weights('ul_model_weights.hdf5')
     upper_right.save_weights('ur_model_weights.hdf5')
     lower_left.save_weights('ll_model_weights.hdf5')
     lower_right.save_weights('lr_model_weights.hdf5')
+
     (x_test, y_test1, y_test2, y_test3, y_test4) = load_data('images_test')
+    
     eva = upper_left.evaluate(x_test, y_test1, batch_size=32, verbose=1)
     print(eva)
     eva = upper_right.evaluate(x_test, y_test2, batch_size=32, verbose=1)

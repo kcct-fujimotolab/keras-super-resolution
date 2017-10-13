@@ -5,38 +5,12 @@ from keras.models import model_from_json
 from PIL import Image
 
 
-def get_args():
-    parser = ArgumentParser()
-    parser.add_argument('-b', '--batch', nargs=1, type=int)
-    parser.add_argument('-o', '--output', nargs=1, type=str)
-    return parser.parse_args()
-
-
-def build_GAN(G, D):
-    model = Sequential()
-    model.add(G)
-    # 判別器を判別に使うために学習は止める
-    D.trainable = False
-    model.add(D)
-    return model
-
-
-def save_images(images, dir_name, file_name):
+def save_images(images, dir_name):
     if os.path.isdir(dir_name) == False:
         os.mkdir(dir_name)
-    if os.path.isdir(dir_name + '/' + file_name) == False:
-        os.mkdir(dir_name + '/' + file_name)
     images = images.astype(np.uint8)
     for i in range(len(images)):
-        Image.fromarray(images[i]).save(dir_name + '/' + file_name + '/result' + str(i) + '.jpg')
-
-
-def generate(G, batch):
-    input_dim = G.input_shape[1]
-    noise = np.random.uniform(-1, 1, (batch, input_dim))
-    gen_images = G.predict(noise, verbose=1)
-    gen_images = gen_images * 255
-    return gen_images
+        Image.fromarray(images[i]).save(dir_name + '/result' + str(i) + '.jpg')
 
 
 def load_model(name):
@@ -46,23 +20,49 @@ def load_model(name):
     return model
 
 
+def load_data(dirname):
+    x_test = np.array([])
+    counter = 0
+    for file in tqdm(os.listdir(dirname)):
+        # 拡張子が.jpgでなければ
+        if os.path.splitext(file)[1] != '.jpg':
+            continue
+        image = Image.open(dirname + '/' + file)
+        x_test = np.append(x_test, image.resize((48, 48)))
+        counter = counter + 1
+    x_test = x_test / 255
+    # 正規化する必要あり
+    shape = (counter, 48, 48, 3)
+    x_test = x_test.reshape(shape)
+    return x_test
+
+
 def main():
-    args = get_args()
-    if args.batch:
-        batch = args.batch[0]
-    else:
-        batch = 24
-    if args.output:
-        dir_name = args.output[0]
-    else:
-        dir_name = 'gen'
-    G = load_model('G_model.json')
-    G.load_weights('G_weights.hdf5')
-    D = load_model('D_model.json')
-    D.load_weights('D_weights.hdf5')
-    # GAN = build_GAN(G, D)
-    images = generate(G, batch)
-    save_images(images, dir_name, 'generate')
+    x_test = load_data('images_test')
+
+    upper_left = load_model('ul_model.json')
+    upper_left.load_weights('ul_weights.hdf5')
+    upper_right = load_model('ur_model.json')
+    upper_right.load_weights('ur_weights.hdf5')
+    lower_left = load_model('ll_model.json')
+    lower_left.load_weights('ll_weights.hdf5')
+    lower_right = load_model('lr_model.json')
+    lower_right.load_weights('lr_weights.hdf5')
+
+    gen_images1 = upper_left.predict(x_test, verbose=1)
+    gen_images2 = upper_right.predict(x_test, verbose=1)
+    gen_images3 = lower_left.predict(x_test, verbose=1)
+    gen_images4 = lower_right.predict(x_test, verbose=1)
+    gen_images1 = gen_images1 * 255
+    gen_images2 = gen_images2 * 255
+    gen_images3 = gen_images3 * 255
+    gen_images4 = gen_images4 * 255
+
+    images = np.concatenate(gen_images1, gen_images2, gen_images3, gen_images4)
+    out_map = images.reshape(len(gen_images1), 2, 2, 48, 48, 3)
+    out_map =  out_map.transpose(0, 3, 1, 4, 2, 5)
+    out_map = out_map.reshape(len(gen_images1), 96, 96, 3)
+    save_images(out_map, 'gen')
 
 
 if __name__ == '__main__':
