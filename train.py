@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from argparse import ArgumentParser
 from keras import backend
-from keras.optimizers import SGD
+from keras.optimizers import SGD, Adam
 from PIL import Image
 from tqdm import tqdm
 from hyperdash import Experiment
@@ -75,7 +75,8 @@ def main():
     lower_left = build_CNN()
     lower_right = build_CNN()
 
-    optimizer = SGD(lr=0.5, momentum=0.9, nesterov=True)
+    # optimizer = SGD(lr=0.5, momentum=0.9, nesterov=True)
+    optimizer = Adam(lr=0.0001)
     upper_left.compile(loss='binary_crossentropy', optimizer=optimizer)
     upper_right.compile(loss='binary_crossentropy', optimizer=optimizer)
     lower_left.compile(loss='binary_crossentropy', optimizer=optimizer)
@@ -102,7 +103,7 @@ def main():
     lower_right.save_weights('lr_model_weights.hdf5')
 
     (x_test, y_test1, y_test2, y_test3, y_test4) = load_data('images_test')
-    
+
     eva = upper_left.evaluate(x_test, y_test1, batch_size=32, verbose=1)
     print(eva)
     eva = upper_right.evaluate(x_test, y_test2, batch_size=32, verbose=1)
