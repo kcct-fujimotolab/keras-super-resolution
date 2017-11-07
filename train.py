@@ -14,14 +14,21 @@ from keras.layers import Conv2D
 
 
 def save_model(model, name):
-    json_data = model.to_json()
+    """
+    モデルをJSONに変換し、任意の名前で保存する
+    # 引数
+        model : Keras model
+        name : String, 保存先ファイル名
+    """
+    json = model.to_json()
     with open(name, 'w') as f:
-        f.write(json_data)
+        f.write(json)
 
 
-def build_CNN():
+def build_model(input_size):
+    input_shape = (input_size[0], input_size[1], 3)
     model = Sequential()
-    model.add(Conv2D(32, kernel_size=(5, 5), input_shape=(48, 48, 3), padding='same'))
+    model.add(Conv2D(128, kernel_size=(3, 3), input_shape=input_shape, padding='same'))
     model.add(Activation('relu'))
     model.add(Conv2D(64, kernel_size=(3, 3), padding='same'))
     model.add(Activation('relu'))
@@ -30,89 +37,50 @@ def build_CNN():
     return model
 
 
-def load_data(dirname):
-    x_train = np.array([])
-    y_train1 = np.array([])
-    y_train2 = np.array([])
-    y_train3 = np.array([])
-    y_train4 = np.array([])
-    counter = 0
-    for file in tqdm(os.listdir(dirname)):
-        # 拡張子が.jpgでなければ
-        if os.path.splitext(file)[1] != '.jpg':
+def load_images(name, size, ext='.jpg'):
+    """
+    画像群を読み込み配列に格納する
+    # 引数
+        name : String, 保存場所
+        size : List, 画像サイズ
+        ext : String, 拡張子
+    # 戻り値
+        images : Numpy array, 画像データ
+    """
+    x_images = np.empty((0, size[0], size[1], 3))
+    y_images = np.empty((0, size[0], size[1], 3))
+    for file in tqdm(os.listdir(name)):
+        if os.path.splitext(file)[1] != ext:
+            # 拡張子が違うなら処理しない
             continue
-        image = Image.open(dirname + '/' + file)
-        x_train = np.append(x_train, image.resize((48, 48)))
-        image = image.resize((96, 96))
-        image = np.array(image)
-        y_train1 = np.append(y_train1, image[0::2,0::2])
-        y_train2 = np.append(y_train2, image[0::2,1::2])
-        y_train3 = np.append(y_train3, image[1::2,0::2])
-        y_train4 = np.append(y_train4, image[1::2,1::2])
-        counter = counter + 1
-    x_train = x_train / 255
-    y_train1 = y_train1 / 255
-    y_train2 = y_train2 / 255
-    y_train3 = y_train3 / 255
-    y_train4 = y_train4 / 255
-    # 正規化する必要あり
-    shape = (counter, 48, 48, 3)
-    x_train = x_train.reshape(shape)
-    y_train1 = y_train1.reshape(shape)
-    y_train2 = y_train2.reshape(shape)
-    y_train3 = y_train3.reshape(shape)
-    y_train4 = y_train4.reshape(shape)
-    return (x_train, y_train1, y_train2, y_train3, y_train4)
+        image = Image.open(name+file)
+        if image.mode != "RGB":
+            # 3ch 画像でなければ変換する
+            image.convert("RGB")
+        image = image.resize(size)
+        x_image = image.resize((size[0]//2, size[1]//2))
+        x_image = image.resize(size, Image.NEAREST)
+        x_image = np.array(x_image)
+        y_image = np.array(image)
+        x_images = np.concatenate((x_images, [x_image]))
+        y_images = np.concatenate((y_images, [y_image]))
+    # 256階調のデータを0-1の範囲に正規化する
+    x_images = x_images / 255
+    y_images = y_images / 255
+    return x_images, y_images
 
 
 def main():
-    exp = Experiment('4PCNN')
-
-    (x_train, y_train1, y_train2, y_train3, y_train4) = load_data('images')
-    
-    upper_left = build_CNN()
-    upper_right = build_CNN()
-    lower_left = build_CNN()
-    lower_right = build_CNN()
-
-    # optimizer = SGD(lr=0.5, momentum=0.9, nesterov=True)
-    optimizer = Adam(lr=0.5)
-    upper_left.compile(loss='mse', optimizer=optimizer)
-    upper_right.compile(loss='mse', optimizer=optimizer)
-    lower_left.compile(loss='mse', optimizer=optimizer)
-    lower_right.compile(loss='mse', optimizer=optimizer)
-
-    save_model(upper_left, 'ul_model.json')
-    save_model(upper_right, 'ur_model.json')
-    save_model(lower_left, 'll_model.json')
-    save_model(lower_right, 'lr_model.json')
-
-    setting = tf.ConfigProto()
-    setting.gpu_options.allow_growth = True
-    sess = tf.Session(config=setting)
-    backend.set_session(sess)
-
-    upper_left.fit(x_train, y_train1, batch_size=32, epochs=20000)
-    upper_right.fit(x_train, y_train2, batch_size=32, epochs=20000)
-    lower_left.fit(x_train, y_train3, batch_size=32, epochs=20000)
-    lower_right.fit(x_train, y_train4, batch_size=32, epochs=20000)
-
-    upper_left.save_weights('ul_model_weights.hdf5')
-    upper_right.save_weights('ur_model_weights.hdf5')
-    lower_left.save_weights('ll_model_weights.hdf5')
-    lower_right.save_weights('lr_model_weights.hdf5')
-
-    (x_test, y_test1, y_test2, y_test3, y_test4) = load_data('images_test')
-
-    eva = upper_left.evaluate(x_test, y_test1, batch_size=32, verbose=1)
+    x_images, y_images = load_data('images/', (128, 128))
+    build_model((128, 128))
+    optimizer = Adam(lr=0.0001)
+    model.compile(loss='binary_crossentropy', optimizer=optimizer)
+    save_model(model, 'model.json')
+    model.fit(x_images, y_images, batch_size=64, epochs=20000)
+    model.save_weights('weights.hdf5')
+    x_test, y_test = load_data('images_sample/', (128, 128))
+    eva = model.evaluate(x_test, y_test, batch_size=64, verbose=1)
     print(eva)
-    eva = upper_right.evaluate(x_test, y_test2, batch_size=32, verbose=1)
-    print(eva)
-    eva = lower_left.evaluate(x_test, y_test3, batch_size=32, verbose=1)
-    print(eva)
-    eva = lower_right.evaluate(x_test, y_test4, batch_size=32, verbose=1)
-    print(eva)
-    exp.end()
 
 
 if __name__ == '__main__':
