@@ -43,12 +43,9 @@ def show(image):
     """
     画像データを生成
     # 引数
-        G : Keras model, 生成器
-        batch : Integer, 出力画像枚数
-    # 戻り値
-        images : Numpy array, 画像データ
+        image : Numpy array
     """
-    image = image * 255
+    image = image[0] * 255
     image = image.astype(np.uint8)
     image = Image.fromarray(image)
     image.show()
@@ -65,7 +62,7 @@ def main():
             continue
         image = load_image(name=values, size=(128, 128))
         prediction = model.predict(image)
-        show(prediction[0])
+        show(prediction)
 
 
 if __name__ == '__main__':
