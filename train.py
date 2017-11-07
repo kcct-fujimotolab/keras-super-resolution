@@ -60,6 +60,8 @@ def load_images(name, size, ext='.jpg'):
         image = image.resize(size)
         x_image = image.resize((size[0]//2, size[1]//2))
         x_image = image.resize(size, Image.NEAREST)
+        x_image = np.array(x_image)
+        y_image = np.array(image)
         x_images.append(x_image)
         y_images.append(image)
     # 256階調のデータを0-1の範囲に正規化する
