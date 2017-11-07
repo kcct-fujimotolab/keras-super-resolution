@@ -58,7 +58,7 @@ def load_images(name, size, ext='.jpg'):
             # 3ch 画像でなければ変換する
             image.convert("RGB")
         x_image = image.resize((size[0]//2, size[1]//2))
-        x_image = image.resize(size, Image.BICUBIC)
+        x_image = image.resize(size, Image.NEAREST)
         x_image = np.array(x_image)
         y_image = image.resize(size)
         y_image = np.array(y_image)
@@ -75,7 +75,7 @@ def load_images(name, size, ext='.jpg'):
 def main():
     x_images, y_images = load_images('images/', (128, 128))
     model = build_model((128, 128))
-    optimizer = Adam(lr=0.001)
+    optimizer = Adam(lr=0.1)
     model.compile(loss='mse', optimizer=optimizer)
     save_model(model, 'model.json')
     model.fit(x_images, y_images, batch_size=64, epochs=50)
