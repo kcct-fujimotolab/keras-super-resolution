@@ -5,64 +5,67 @@ from keras.models import model_from_json
 from PIL import Image
 
 
-def save_images(images, dir_name):
-    if os.path.isdir(dir_name) == False:
-        os.mkdir(dir_name)
-    images = images.astype(np.uint8)
-    for i in range(len(images)):
-        Image.fromarray(images[i]).save(dir_name + '/result' + str(i) + '.jpg')
+def load_image(name, size):
+    """
+    画像を読み込み配列に格納する
+    # 引数
+        name : String, 保存場所
+        size : List, 画像サイズ
+    # 戻り値
+        image : Numpy array, 画像データ
+    """
+    image = Image.open(name)
+    image = image.resize((size[0]//2, size[1]//2))
+    image = image.resize(size, Image.NEAREST)
+    image.show()
+    image = np.array(image)
+    image = image / 255
+    # モデルの入力次元にあわせる
+    image = np.array([image])
+    return image
 
 
 def load_model(name):
+    """
+    任意のJSONファイルを参照し、モデルに変換する
+    # 引数
+        name : String, 保存先ファイル名
+    # 戻り値
+        Keras model
+    """
     with open(name) as f:
-        json_data = f.read()
-    model = model_from_json(json_data)
+        json = f.read()
+    model = model_from_json(json)
     return model
 
 
-def load_data(dirname):
-    x_test = np.array([])
-    counter = 0
-    for file in tqdm(os.listdir(dirname)):
-        # 拡張子が.jpgでなければ
-        if os.path.splitext(file)[1] != '.jpg':
-            continue
-        image = Image.open(dirname + '/' + file)
-        x_test = np.append(x_test, image.resize((48, 48)))
-        counter = counter + 1
-    x_test = x_test / 255
-    # 正規化する必要あり
-    shape = (counter, 48, 48, 3)
-    x_test = x_test.reshape(shape)
-    return x_test
+def show(image):
+    """
+    画像データを生成
+    # 引数
+        G : Keras model, 生成器
+        batch : Integer, 出力画像枚数
+    # 戻り値
+        images : Numpy array, 画像データ
+    """
+    image = image * 255
+    image = image.astype(np.uint8)
+    image = Image.fromarray(image)
+    image.show()
 
 
 def main():
-    x_test = load_data('images_test')
-
-    upper_left = load_model('ul_model.json')
-    upper_left.load_weights('ul_weights.hdf5')
-    upper_right = load_model('ur_model.json')
-    upper_right.load_weights('ur_weights.hdf5')
-    lower_left = load_model('ll_model.json')
-    lower_left.load_weights('ll_weights.hdf5')
-    lower_right = load_model('lr_model.json')
-    lower_right.load_weights('lr_weights.hdf5')
-
-    gen_images1 = upper_left.predict(x_test, verbose=1)
-    gen_images2 = upper_right.predict(x_test, verbose=1)
-    gen_images3 = lower_left.predict(x_test, verbose=1)
-    gen_images4 = lower_right.predict(x_test, verbose=1)
-    gen_images1 = gen_images1 * 255
-    gen_images2 = gen_images2 * 255
-    gen_images3 = gen_images3 * 255
-    gen_images4 = gen_images4 * 255
-
-    images = np.concatenate(gen_images1, gen_images2, gen_images3, gen_images4)
-    out_map = images.reshape(len(gen_images1), 2, 2, 48, 48, 3)
-    out_map =  out_map.transpose(0, 3, 1, 4, 2, 5)
-    out_map = out_map.reshape(len(gen_images1), 96, 96, 3)
-    save_images(out_map, 'gen')
+    model = load_model('model.json')
+    model.load_weights('weights.hdf5')
+    print('Enter the file name (*.jpg)')
+    while True:
+        values = input('>> ').rstrip()
+        if os.path.isfile(values) == False:
+            print('File not exist')
+            continue
+        image = load_image(name=values, size=(128, 128))
+        prediction = model.predict(image)
+        show(prediction[0])
 
 
 if __name__ == '__main__':

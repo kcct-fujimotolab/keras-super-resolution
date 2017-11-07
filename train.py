@@ -57,13 +57,13 @@ def load_images(name, size, ext='.jpg'):
         if image.mode != "RGB":
             # 3ch 画像でなければ変換する
             image.convert("RGB")
-        image = image.resize(size)
         x_image = image.resize((size[0]//2, size[1]//2))
         x_image = image.resize(size, Image.NEAREST)
         x_image = np.array(x_image)
-        y_image = np.array(image)
+        y_image = image.resize(size)
+        y_image = np.array(y_image)
         x_images.append(x_image)
-        y_images.append(image)
+        y_images.append(y_image)
     # 256階調のデータを0-1の範囲に正規化する
     x_images = np.array(x_images)
     y_images = np.array(y_images)
