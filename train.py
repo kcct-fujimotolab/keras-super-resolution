@@ -71,14 +71,14 @@ def load_images(name, size, ext='.jpg'):
 
 
 def main():
-    x_images, y_images = load_data('images/', (128, 128))
-    build_model((128, 128))
+    x_images, y_images = load_images('images_sample/', (128, 128))
+    model = build_model((128, 128))
     optimizer = Adam(lr=0.0001)
     model.compile(loss='binary_crossentropy', optimizer=optimizer)
     save_model(model, 'model.json')
-    model.fit(x_images, y_images, batch_size=64, epochs=20000)
+    model.fit(x_images, y_images, batch_size=64, epochs=200)
     model.save_weights('weights.hdf5')
-    x_test, y_test = load_data('images_sample/', (128, 128))
+    x_test, y_test = load_images('images_sample/', (128, 128))
     eva = model.evaluate(x_test, y_test, batch_size=64, verbose=1)
     print(eva)
 
