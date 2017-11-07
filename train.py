@@ -75,8 +75,8 @@ def load_images(name, size, ext='.jpg'):
 def main():
     x_images, y_images = load_images('images/', (128, 128))
     model = build_model((128, 128))
-    optimizer = Adam(lr=0.0001)
-    model.compile(loss='binary_crossentropy', optimizer=optimizer)
+    optimizer = Adam(lr=0.001)
+    model.compile(loss='mse', optimizer=optimizer)
     save_model(model, 'model.json')
     model.fit(x_images, y_images, batch_size=64, epochs=50)
     model.save_weights('weights.hdf5')
