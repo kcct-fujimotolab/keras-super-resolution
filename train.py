@@ -71,7 +71,7 @@ def load_images(name, size, ext='.jpg'):
 
 
 def main():
-    x_images, y_images = load_images('images_sample/', (128, 128))
+    x_images, y_images = load_images('images/', (128, 128))
     model = build_model((128, 128))
     optimizer = Adam(lr=0.0001)
     model.compile(loss='binary_crossentropy', optimizer=optimizer)
