@@ -42,7 +42,7 @@ def build_model(input_size):
     model = Sequential()
     model.add(Conv2D(128, kernel_size=(3, 3), input_shape=input_shape, padding='same'))
     model.add(Activation('relu'))
-    model.add(Conv2D(64, kernel_size=(3, 3), padding='same'))
+    model.add(Conv2D(64, kernel_size=(5, 5), padding='same'))
     model.add(Activation('relu'))
     model.add(Conv2D(3, kernel_size=(3, 3), padding='same'))
     model.add(Activation('sigmoid'))
