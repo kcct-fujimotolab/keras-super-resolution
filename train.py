@@ -78,7 +78,7 @@ def main():
     optimizer = Adam(lr=0.0001)
     model.compile(loss='binary_crossentropy', optimizer=optimizer)
     save_model(model, 'model.json')
-    model.fit(x_images, y_images, batch_size=64, epochs=200)
+    model.fit(x_images, y_images, batch_size=64, epochs=50)
     model.save_weights('weights.hdf5')
     x_test, y_test = load_images('images_sample/', (128, 128))
     eva = model.evaluate(x_test, y_test, batch_size=64, verbose=1)
