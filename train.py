@@ -58,7 +58,7 @@ def load_images(name, size, ext='.jpg'):
             # 3ch 画像でなければ変換する
             image.convert("RGB")
         x_image = image.resize((size[0]//2, size[1]//2))
-        x_image = image.resize(size, Image.NEAREST)
+        x_image = image.resize(size, Image.BICUBIC)
         x_image = np.array(x_image)
         y_image = image.resize(size)
         y_image = np.array(y_image)
