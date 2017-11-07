@@ -47,8 +47,8 @@ def load_images(name, size, ext='.jpg'):
     # 戻り値
         images : Numpy array, 画像データ
     """
-    x_images = np.empty((0, size[0], size[1], 3))
-    y_images = np.empty((0, size[0], size[1], 3))
+    x_images = []
+    y_images = []
     for file in tqdm(os.listdir(name)):
         if os.path.splitext(file)[1] != ext:
             # 拡張子が違うなら処理しない
@@ -60,11 +60,11 @@ def load_images(name, size, ext='.jpg'):
         image = image.resize(size)
         x_image = image.resize((size[0]//2, size[1]//2))
         x_image = image.resize(size, Image.NEAREST)
-        x_image = np.array(x_image)
-        y_image = np.array(image)
-        x_images = np.concatenate((x_images, [x_image]))
-        y_images = np.concatenate((y_images, [y_image]))
+        x_images.append(x_image)
+        y_images.append(image)
     # 256階調のデータを0-1の範囲に正規化する
+    x_images = np.array(x_images)
+    y_images = np.array(y_images)
     x_images = x_images / 255
     y_images = y_images / 255
     return x_images, y_images
