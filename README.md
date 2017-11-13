@@ -63,10 +63,10 @@ Enter the file name (*.jpg)
 We extracted 4096 images from the face data provided by [Labeled Faces in the Wild](http://vis-www.cs.umass.edu/lfw/), and trained.  
 A part of the results are shown below  
 
-![A](https://i.imgur.com/pw5Ju2J.jpg)
-![B](https://i.imgur.com/d0Kgf4Y.jpg)
-![C](https://i.imgur.com/AMZi33p.jpg)
-![D](https://i.imgur.com/9aUd7nK.jpg)
+![A](https://i.imgur.com/pw5Ju2J.jpg)  
+![B](https://i.imgur.com/d0Kgf4Y.jpg)  
+![C](https://i.imgur.com/AMZi33p.jpg)  
+![D](https://i.imgur.com/9aUd7nK.jpg)  
 
 ## Author
 
