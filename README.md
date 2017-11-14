@@ -60,8 +60,8 @@ Enter the file name (*.jpg)
 
 ## Results
 
-We extracted 4096 images from the face data provided by [Labeled Faces in the Wild](http://vis-www.cs.umass.edu/lfw/), and trained.  
-A part of the results are shown below  
+We extracted 4096 images from the face data provided by [Labeled Faces in the Wild](http://vis-www.cs.umass.edu/lfw/), and trained 1000 epochs.  
+A part of the results are shown below.
 
 ![A](https://i.imgur.com/pw5Ju2J.jpg)  
 ![B](https://i.imgur.com/d0Kgf4Y.jpg)  
