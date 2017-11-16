@@ -10,7 +10,10 @@ def show(y_image, c_image):
     """
     y_image = y_image[0] * 255
     c_image = c_image[0] * 255
+    y_image = y_image.transpose((2, 0, 1))
+    c_image = c_image.transpose((2, 0, 1))
     image = np.concatenate((y_image, c_image))
+    image = image.transpose((1, 2, 0))
     image = image.astype(np.uint8)
     image = Image.fromarray(image)
     image.show()

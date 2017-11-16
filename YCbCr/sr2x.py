@@ -20,7 +20,7 @@ def main():
             continue
         y_image, c_image = load_image(name=value, size=size)
         show(y_image, c_image)
-        prediction = model.predict(image)
+        prediction = model.predict(y_image)
         show(prediction, c_image)
 
 
