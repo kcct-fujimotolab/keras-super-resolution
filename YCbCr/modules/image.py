@@ -37,9 +37,9 @@ def load_image(name, size):
     # 正規化
     image = image / 255
     # YとCbCr成分を分割する。
-    image = image.transporse((2, 0, 1))
-    y_image = image[0::3].transporse((1, 2, 0))
-    c_image = image[1:].transporse((1, 2, 0))
+    image = image.transpose((2, 0, 1))
+    y_image = image[0::3].transpose((1, 2, 0))
+    c_image = image[1:].transpose((1, 2, 0))
     # モデルの入力次元にあわせる
     y_image = np.array([y_image])
     c_image = np.array([c_image])
@@ -81,8 +81,8 @@ def load_images(name, size, ext='.jpg'):
     x_images = x_images / 255
     y_images = y_images / 255
     # Y成分のみ抽出
-    x_images = x_images.transporse((3, 0, 1, 2))
-    x_images = x_images[1::3].transporse((1, 2, 3, 0))
-    y_images = y_images.transporse((3, 0, 1, 2))
-    y_images = y_images[1::3].transporse((1, 2, 3, 0))
+    x_images = x_images.transpose((3, 0, 1, 2))
+    x_images = x_images[1::3].transpose((1, 2, 3, 0))
+    y_images = y_images.transpose((3, 0, 1, 2))
+    y_images = y_images[1::3].transpose((1, 2, 3, 0))
     return x_images, y_images
