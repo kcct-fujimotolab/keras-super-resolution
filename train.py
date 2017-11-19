@@ -32,7 +32,7 @@ def main():
     # トレーニング
     x_images, y_images = load_images(input_dirname, image_size)
     model = build_model(image_size)
-    optimizer = Adam(lr=0.01)
+    optimizer = Adam(lr=0.05)
     # optimizer = SGD(lr=0.01, momentum=0.9)
     model.compile(loss='mse', optimizer=optimizer)
     save_model(model, 'model.json')
