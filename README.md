@@ -3,8 +3,9 @@ Easy model running super resolution based on SRCNN using Keras.
 
 ## Description
 
-These programs can load images from the specified directory, resize these images and train the model.
-Also you can load trained models and do super resolution.
+Implementation of SRCNN with RGB using Keras.
+These programs can load images from the specified directory, resize these images and train the Keras model.
+Also, trained models can be loaded and can perform upsampling.
 
 ## Requirements
 
@@ -54,7 +55,7 @@ Enter the file name (*.jpg)
 ### train.py
 
 `--input` `-i`: data sets path (default `-i images/`)  
-`--size` `-z`: image size, **2 values required** (default `-z 64 64`)  
+`--size` `-z`: image size, **2 values required**, **must be multiples of 2** (default `-z 128 128`)  
 `--epoch` `-e`: number of epochs (default `-e 500`)  
 `--batch` `-b`: batch size (default `-b 64`)  
 
