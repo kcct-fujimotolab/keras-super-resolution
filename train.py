@@ -1,7 +1,8 @@
 from argparse import ArgumentParser
 from keras.optimizers import SGD, Adam
 
-from networks.conv_3layer import build_model
+from basic import build_model
+# from minimum import build_model
 from modules.file import save_model
 from modules.image import load_images, to_dirname
 from modules.interface import show
