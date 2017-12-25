@@ -1,6 +1,8 @@
 # Datasets
 images/
 images_sample/
+test/
+gen/
 
 # Snapshots
 *model.json
