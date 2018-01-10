@@ -59,6 +59,12 @@ Enter the file name (*.jpg)
 `--epoch` `-e`: number of epochs (default `-e 500`)  
 `--batch` `-b`: batch size (default `-b 64`)  
 
+### sr2x.py
+
+`--file` `-f`: image path (default `None`, example `-f test/image.jpg`)  
+`--dir` `-d`: images directory path (default `None`, example `-d test/`)  
+`--output` `-o`: number of epochs (default `None`, example `-o output/`)  
+
 ## Results
 
 We extracted 4096 images from the face data provided by [Labeled Faces in the Wild](http://vis-www.cs.umass.edu/lfw/), and trained 1000 epochs.  
