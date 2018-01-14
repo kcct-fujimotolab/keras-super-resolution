@@ -56,8 +56,9 @@ Enter the file name (*.jpg)
 
 `--input` `-i`: data sets path (default `-i images/`)  
 `--size` `-z`: image size, **2 values required**, **must be multiples of 2** (default `-z 128 128`)  
-`--epoch` `-e`: number of epochs (default `-e 500`)  
+`--epoch` `-e`: number of epochs (default `-e 3000`)  
 `--batch` `-b`: batch size (default `-b 64`)  
+`--test` `-t`: test data path (default `None`, example `-t images_test/`)  
 
 ### sr2x.py
 
@@ -70,10 +71,9 @@ Enter the file name (*.jpg)
 We extracted 4096 images from the face data provided by [Labeled Faces in the Wild](http://vis-www.cs.umass.edu/lfw/), and trained 1000 epochs.  
 A part of the results are shown below.
 
-![A](https://i.imgur.com/pw5Ju2J.jpg)  
-![B](https://i.imgur.com/d0Kgf4Y.jpg)  
-![C](https://i.imgur.com/AMZi33p.jpg)  
-![D](https://i.imgur.com/9aUd7nK.jpg)  
+![A](https://i.imgur.com/uJUk5n4.jpg)  
+![B](https://i.imgur.com/smvqyjW.jpg)  
+![C](https://i.imgur.com/Xa5FNuU.jpg)  
 
 ## Author
 
