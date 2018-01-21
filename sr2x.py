@@ -61,8 +61,8 @@ def main():
         outname = args.output
     else:
         outname = False
-    model = load_model('model.json')
-    model.load_weights('weights.hdf5')
+    model = load_model('model3.json')
+    model.load_weights('weights3.hdf5')
     # モデルから画像サイズを取得
     size = (model.input_shape[1], model.input_shape[2])
     if filename and outname:
