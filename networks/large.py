@@ -17,6 +17,6 @@ def build_model(input_size):
     model.add(Activation('relu'))
     model.add(Conv2D(128, kernel_size=(3, 3), padding='same'))
     model.add(Activation('relu'))
-    model.add(Conv2D(64, (5, 5), padding='same'))
+    model.add(Conv2D(3, (5, 5), padding='same'))
     model.add(Activation('sigmoid'))
     return model
