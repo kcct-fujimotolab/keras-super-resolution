@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from keras.optimizers import SGD, Adam
 
-from large import build_model
+from networks.large import build_model
 from modules.file import save_model
 from modules.image import load_images, to_dirname
 from modules.interface import show
